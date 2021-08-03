@@ -1,6 +1,6 @@
 //You can add this under Custom > JavaScript in the Customizer.
 jQuery( document ).ready(function() {
- jQuery('.all-sort').click();
+ jQuery('[data-filter=".residences-interior-sort"]').click()
 });
 
 //If you wanted to hide the “sort portfolio” button you can add this under Custom > CSS in the Customizer.
