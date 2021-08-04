@@ -1,0 +1,12 @@
+<script type="text/javascript"> 
+
+		jQuery('div#dt-1505825495469-57833bd5-c4ac img').click(function() {
+	jQuery('div#dt-1505825495469-57833bd5-c4ac img').text(this.textContent);
+});
+
+jQuery('div#dt-1505825495469-57833bd5-c4ac img').click(function(e) { 
+	e.preventDefault();
+	jQuery('div#dt-1505825495469-57833bd5-c4ac img').text(this.textContent);
+});
+		
+ </script>
