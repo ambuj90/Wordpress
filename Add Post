@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<?php echo get_template_directory_uri() ?>/style.css">
+    <title>Watch Learn Theme</title>
+</head>
+<body>
+
+<h1>Hello World</h1>
+
+<button class="js-add-post">Add post</button>
+
+<script>
+    fetch('http://149.28.219.166/wp-json/wp/v2/posts').then(function(response){
+        return response.json()
+    }).then(function(posts){
+        console.log(posts)
+    });
+
+    fetch('http://149.28.219.166/wp-json/jwt-auth/v1/token',{
+    method: "POST",
+    headers:{
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+    },
+
+    body:JSON.stringify({
+        username: 'admin',
+        password: 'test123'
+    })
+    }).then(function(response){
+        return response.json()
+    }).then(function(user){
+        console.log(user.token)
+        localStorage.setItem('jwt', user.token)
+    });
+
+    function addPost() {
+        fetch('http://149.28.219.166/wp-json/wp/v2/posts',{
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+            },
+            body:JSON.stringify({
+                title: 'Add posts from the frontend',
+                content: 'This is the way to add posts from your frontend.',
+                status: 'publish'
+            })
+        }).then(function(response){
+            return response.json()
+        }).then(function(post){
+            console.log(post)
+        });
+    }
+
+    const addPostButton = document.querySelector('.js-add-post')
+    addPostButton.addEventListener('click', () => addPost())
+    
+</script>
+    
+</body>
+</html>
