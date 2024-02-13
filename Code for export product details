@@ -1,0 +1,30 @@
+Code for export product details ----------
+<?php
+/*
+Template Name: Product List
+*/
+get_header();
+global $wpdb;
+// Get all product IDs and names from the database
+$product_ids_and_names = $wpdb->get_results("SELECT ID, post_title FROM {$wpdb->prefix}posts WHERE post_type = 'product' AND post_status = 'publish'", ARRAY_A);
+// Check if there are any products
+if ($product_ids_and_names) {
+    echo '<table>';
+    echo '<tr><th>Product Name</th><th>Product URL</th></tr>';
+    foreach ($product_ids_and_names as $product) {
+        $product_id = $product['ID'];
+        $product_name = $product['post_title'];
+        // Get product URL
+        $product_url = get_permalink($product_id);
+        // Print product details in table rows
+        echo '<tr>';
+        echo "<td>$product_name</td>";
+        echo "<td><a href='$product_url'>$product_url</a></td>";
+        echo '</tr>';
+    }
+    echo '</table>';
+} else {
+    echo "No products found.";
+}
+get_footer();
+?>
