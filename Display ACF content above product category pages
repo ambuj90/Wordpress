@@ -1,0 +1,22 @@
+// Display ACF content above product category pages
+add_action('woocommerce_before_main_content', 'custom_display_category_content_above', 20);
+
+function custom_display_category_content_above() {
+    // Check if it's a product category page
+    if (is_product_category()) {
+        // Get the current category name
+        $current_category_name = single_cat_title('', false);
+
+        // Get the current category ID
+        $term_id = get_queried_object_id();
+
+        // Get the ACF field value for above content
+        $above_content = get_field('category_description_above', 'product_cat_' . $term_id);
+
+        // Display the above content and current category name
+        echo '<div class="category-above-content">';
+        echo '<h2 class="category-name">' . $current_category_name. '</h2>';
+        echo '<div class="category-contents">' .$above_content . '</div>';
+        echo '</div>';
+    }
+}
