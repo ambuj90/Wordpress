@@ -1,0 +1,168 @@
+ <?php 
+
+/* 
+Template Name: Order Status
+*/
+get_header();
+?>
+
+<div class="order-inqry">
+    <div class="section-order">
+        <div class="order_custom">
+            <div class="order-content">
+                <h2>Order Inquiry</h2>
+                <p>To learn your order status, you can inquire by entering your information.</p>
+            </div>
+            <div class="order-form">
+                <h2>Order Status</h2>
+                <form id="orderStatusForm">
+                    <input type="text" id="orderId" name="orderId" placeholder="Enter Order ID">
+                    <input type="email" id="email" name="email" placeholder="Enter Email ID">
+                    <input type="submit" value="Check Order" id="ordermain">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="order-info">
+        <h2>Order Status Information</h2>
+        <div class="orderTable">
+            <table id="orderDetailsTable" class="cutom_oder">
+            <!-- Order details will be displayed here -->
+            </table>
+        </div>
+
+    </div>
+</div>
+
+   
+
+<style>
+
+td.twoDetls {
+    display: flex;
+    align-items: center;
+}
+
+td.twoDetls img {
+    width: 25px;
+    margin-right: 10px;
+}
+
+.cutom_oder tr td {
+    border: 1px solid #241a1a14;
+}
+.orderTable {
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+    padding: 40px;
+    margin-top: 20px;
+}
+tr.test th {
+    color: #714DFF;
+    border: 1px solid #241a1a14;
+    text-align: left;
+    font-size: 20px;
+}
+.order_custom {
+    border-radius: 12px;
+}
+input#ordermain {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    display: block;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: 600;
+}
+.order-form {
+    padding: 100px;
+    background: #fff;
+    width: 60%;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.order-form h2 {
+    text-align: center;
+    /* border-bottom: 1px solid; */
+    /* margin-bottom: 40px; */
+    /* width: 50%; */
+    margin: 0 auto;
+    color: #714DFF;
+    font-size: 34px;
+    font-weight: 700;
+}
+.order-info h2:after {
+    content: "";
+    border-bottom: 1px solid #ced4da;
+    width: 10%;
+    max-width: 18.75rem;
+    display: block;
+    margin: auto;
+    height: 1rem;
+}
+.order-info {
+    padding: 60px 0;
+}
+
+.order-info h2 {
+    font-weight: 600;
+    text-align: center;
+}
+.order-form form {
+    display: block;
+    width: auto;
+    padding-top: 40px;
+}
+
+.order-form input {
+    width: 100%;
+    margin-bottom: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+}
+    .order-inqry {
+    padding: 40px 80px;
+}
+
+.order_custom {
+    display: flex;
+    justify-content: space-between;
+    /* padding: 0 30px; */
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(0,0,0,1) 8%, rgba(0,212,255,1) 100%);
+}
+
+.order-content {
+    width: 40%;
+}
+.order-form h2:after {
+    content: "";
+    border-bottom: 1px solid #714DFF;
+    width: 10%;
+    max-width: 18.75rem;
+    display: block;
+    margin: auto;
+    height: 0.5rem;
+}
+.order-content h2, .order-content p {
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+    color: #fff;
+    /* font-size: 42px; */
+    font-weight: 600;
+}
+
+.order-content p {
+    padding-top: 30px;
+}
+
+.order-content h2 {
+    font-size: 36px;
+}
+</style>
+
+
+ <?php get_footer(); ?>
