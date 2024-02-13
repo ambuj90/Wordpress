@@ -1767,22 +1767,4 @@ function my_custom_tracking( $order_id ) {
     }
     $efOrder['items'] = $efItems;
 
-    $javascriptCode = '<script type="text/javascript" src="https://www.bcms4trk.com/scripts/sdk/everflow.js"></script>
-        <script type="text/javascript">
-            EF.conversion({
-                aid: 2,
-                amount: '.($order->get_total() - $order->get_shipping_total()).',
-                order_id: "'.$order_id.'",
-                order: '.json_encode($efOrder).',
-                coupon_code: "'.$coupons.'",
-                adv1: "", //Optional
-                adv2: "", //Optional
-                adv3: "", //Optional
-                adv4: "", //Optional
-                adv5: "", //Optional
-                email: "'.$order->billing_email.'",
-            });
-        </script>';
-
-    echo $javascriptCode;
 }
