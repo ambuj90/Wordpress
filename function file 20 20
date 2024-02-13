@@ -1,0 +1,1788 @@
+<?php
+/**
+ * Functions and definitions
+ *
+ * @link https://developer.wordpress.org/themes/basics/theme-functions/
+ *
+ * @package WordPress
+ * @subpackage Twenty_Twenty_One
+ * @since Twenty Twenty-One 1.0
+ */
+
+// This theme requires WordPress 5.3 or later.
+if ( version_compare( $GLOBALS['wp_version'], '5.3', '<' ) ) {
+	require get_template_directory() . '/inc/back-compat.php';
+}
+
+if ( ! function_exists( 'twenty_twenty_one_setup' ) ) {
+	/**
+	 * Sets up theme defaults and registers support for various WordPress features.
+	 *
+	 * Note that this function is hooked into the after_setup_theme hook, which
+	 * runs before the init hook. The init hook is too late for some features, such
+	 * as indicating support for post thumbnails.
+	 *
+	 * @since Twenty Twenty-One 1.0
+	 *
+	 * @return void
+	 */
+	function twenty_twenty_one_setup() {
+		/*
+		 * Make theme available for translation.
+		 * Translations can be filed in the /languages/ directory.
+		 * If you're building a theme based on Twenty Twenty-One, use a find and replace
+		 * to change 'twentytwentyone' to the name of your theme in all the template files.
+		 */
+		load_theme_textdomain( 'twentytwentyone', get_template_directory() . '/languages' );
+
+		// Add default posts and comments RSS feed links to head.
+		add_theme_support( 'automatic-feed-links' );
+
+		/*
+		 * Let WordPress manage the document title.
+		 * This theme does not use a hard-coded <title> tag in the document head,
+		 * WordPress will provide it for us.
+		 */
+		add_theme_support( 'title-tag' );
+
+		/**
+		 * Add post-formats support.
+		 */
+		add_theme_support(
+			'post-formats',
+			array(
+				'link',
+				'aside',
+				'gallery',
+				'image',
+				'quote',
+				'status',
+				'video',
+				'audio',
+				'chat',
+			)
+		);
+
+		/*
+		 * Enable support for Post Thumbnails on posts and pages.
+		 *
+		 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+		 */
+		add_theme_support( 'post-thumbnails' );
+		set_post_thumbnail_size( 1568, 9999 );
+
+		register_nav_menus(
+			array(
+				'primary' => esc_html__( 'Primary menu', 'twentytwentyone' ),
+				'footer'  => esc_html__( 'Secondary menu', 'twentytwentyone' ),
+			)
+		);
+
+		/*
+		 * Switch default core markup for search form, comment form, and comments
+		 * to output valid HTML5.
+		 */
+		add_theme_support(
+			'html5',
+			array(
+				'comment-form',
+				'comment-list',
+				'gallery',
+				'caption',
+				'style',
+				'script',
+				'navigation-widgets',
+			)
+		);
+
+		/*
+		 * Add support for core custom logo.
+		 *
+		 * @link https://codex.wordpress.org/Theme_Logo
+		 */
+		$logo_width  = 300;
+		$logo_height = 100;
+
+		add_theme_support(
+			'custom-logo',
+			array(
+				'height'               => $logo_height,
+				'width'                => $logo_width,
+				'flex-width'           => true,
+				'flex-height'          => true,
+				'unlink-homepage-logo' => true,
+			)
+		);
+
+		// Add theme support for selective refresh for widgets.
+		add_theme_support( 'customize-selective-refresh-widgets' );
+
+		// Add support for Block Styles.
+		add_theme_support( 'wp-block-styles' );
+
+		// Add support for full and wide align images.
+		add_theme_support( 'align-wide' );
+
+		// Add support for editor styles.
+		add_theme_support( 'editor-styles' );
+		$background_color = get_theme_mod( 'background_color', 'D1E4DD' );
+		if ( 127 > Twenty_Twenty_One_Custom_Colors::get_relative_luminance_from_hex( $background_color ) ) {
+			add_theme_support( 'dark-editor-style' );
+		}
+
+		$editor_stylesheet_path = './assets/css/style-editor.css';
+
+		// Note, the is_IE global variable is defined by WordPress and is used
+		// to detect if the current browser is internet explorer.
+		global $is_IE;
+		if ( $is_IE ) {
+			$editor_stylesheet_path = './assets/css/ie-editor.css';
+		}
+
+		// Enqueue editor styles.
+		add_editor_style( $editor_stylesheet_path );
+
+		// Add custom editor font sizes.
+		add_theme_support(
+			'editor-font-sizes',
+			array(
+				array(
+					'name'      => esc_html__( 'Extra small', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'XS', 'Font size', 'twentytwentyone' ),
+					'size'      => 16,
+					'slug'      => 'extra-small',
+				),
+				array(
+					'name'      => esc_html__( 'Small', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'S', 'Font size', 'twentytwentyone' ),
+					'size'      => 18,
+					'slug'      => 'small',
+				),
+				array(
+					'name'      => esc_html__( 'Normal', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'M', 'Font size', 'twentytwentyone' ),
+					'size'      => 20,
+					'slug'      => 'normal',
+				),
+				array(
+					'name'      => esc_html__( 'Large', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'L', 'Font size', 'twentytwentyone' ),
+					'size'      => 24,
+					'slug'      => 'large',
+				),
+				array(
+					'name'      => esc_html__( 'Extra large', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'XL', 'Font size', 'twentytwentyone' ),
+					'size'      => 40,
+					'slug'      => 'extra-large',
+				),
+				array(
+					'name'      => esc_html__( 'Huge', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'XXL', 'Font size', 'twentytwentyone' ),
+					'size'      => 96,
+					'slug'      => 'huge',
+				),
+				array(
+					'name'      => esc_html__( 'Gigantic', 'twentytwentyone' ),
+					'shortName' => esc_html_x( 'XXXL', 'Font size', 'twentytwentyone' ),
+					'size'      => 144,
+					'slug'      => 'gigantic',
+				),
+			)
+		);
+
+		// Custom background color.
+		add_theme_support(
+			'custom-background',
+			array(
+				'default-color' => 'd1e4dd',
+			)
+		);
+
+		// Editor color palette.
+		$black     = '#000000';
+		$dark_gray = '#28303D';
+		$gray      = '#39414D';
+		$green     = '#D1E4DD';
+		$blue      = '#D1DFE4';
+		$purple    = '#D1D1E4';
+		$red       = '#E4D1D1';
+		$orange    = '#E4DAD1';
+		$yellow    = '#EEEADD';
+		$white     = '#FFFFFF';
+
+		add_theme_support(
+			'editor-color-palette',
+			array(
+				array(
+					'name'  => esc_html__( 'Black', 'twentytwentyone' ),
+					'slug'  => 'black',
+					'color' => $black,
+				),
+				array(
+					'name'  => esc_html__( 'Dark gray', 'twentytwentyone' ),
+					'slug'  => 'dark-gray',
+					'color' => $dark_gray,
+				),
+				array(
+					'name'  => esc_html__( 'Gray', 'twentytwentyone' ),
+					'slug'  => 'gray',
+					'color' => $gray,
+				),
+				array(
+					'name'  => esc_html__( 'Green', 'twentytwentyone' ),
+					'slug'  => 'green',
+					'color' => $green,
+				),
+				array(
+					'name'  => esc_html__( 'Blue', 'twentytwentyone' ),
+					'slug'  => 'blue',
+					'color' => $blue,
+				),
+				array(
+					'name'  => esc_html__( 'Purple', 'twentytwentyone' ),
+					'slug'  => 'purple',
+					'color' => $purple,
+				),
+				array(
+					'name'  => esc_html__( 'Red', 'twentytwentyone' ),
+					'slug'  => 'red',
+					'color' => $red,
+				),
+				array(
+					'name'  => esc_html__( 'Orange', 'twentytwentyone' ),
+					'slug'  => 'orange',
+					'color' => $orange,
+				),
+				array(
+					'name'  => esc_html__( 'Yellow', 'twentytwentyone' ),
+					'slug'  => 'yellow',
+					'color' => $yellow,
+				),
+				array(
+					'name'  => esc_html__( 'White', 'twentytwentyone' ),
+					'slug'  => 'white',
+					'color' => $white,
+				),
+			)
+		);
+
+		add_theme_support(
+			'editor-gradient-presets',
+			array(
+				array(
+					'name'     => esc_html__( 'Purple to yellow', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $purple . ' 0%, ' . $yellow . ' 100%)',
+					'slug'     => 'purple-to-yellow',
+				),
+				array(
+					'name'     => esc_html__( 'Yellow to purple', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $purple . ' 100%)',
+					'slug'     => 'yellow-to-purple',
+				),
+				array(
+					'name'     => esc_html__( 'Green to yellow', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $green . ' 0%, ' . $yellow . ' 100%)',
+					'slug'     => 'green-to-yellow',
+				),
+				array(
+					'name'     => esc_html__( 'Yellow to green', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $green . ' 100%)',
+					'slug'     => 'yellow-to-green',
+				),
+				array(
+					'name'     => esc_html__( 'Red to yellow', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $red . ' 0%, ' . $yellow . ' 100%)',
+					'slug'     => 'red-to-yellow',
+				),
+				array(
+					'name'     => esc_html__( 'Yellow to red', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $yellow . ' 0%, ' . $red . ' 100%)',
+					'slug'     => 'yellow-to-red',
+				),
+				array(
+					'name'     => esc_html__( 'Purple to red', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $purple . ' 0%, ' . $red . ' 100%)',
+					'slug'     => 'purple-to-red',
+				),
+				array(
+					'name'     => esc_html__( 'Red to purple', 'twentytwentyone' ),
+					'gradient' => 'linear-gradient(160deg, ' . $red . ' 0%, ' . $purple . ' 100%)',
+					'slug'     => 'red-to-purple',
+				),
+			)
+		);
+
+		/*
+		* Adds starter content to highlight the theme on fresh sites.
+		* This is done conditionally to avoid loading the starter content on every
+		* page load, as it is a one-off operation only needed once in the customizer.
+		*/
+		if ( is_customize_preview() ) {
+			require get_template_directory() . '/inc/starter-content.php';
+			add_theme_support( 'starter-content', twenty_twenty_one_get_starter_content() );
+		}
+
+		// Add support for responsive embedded content.
+		add_theme_support( 'responsive-embeds' );
+
+		// Add support for custom line height controls.
+		add_theme_support( 'custom-line-height' );
+
+		// Add support for experimental link color control.
+		add_theme_support( 'experimental-link-color' );
+
+		// Add support for experimental cover block spacing.
+		add_theme_support( 'custom-spacing' );
+
+		// Add support for custom units.
+		// This was removed in WordPress 5.6 but is still required to properly support WP 5.5.
+		add_theme_support( 'custom-units' );
+
+		// Remove feed icon link from legacy RSS widget.
+		add_filter( 'rss_widget_feed_link', '__return_false' );
+	}
+}
+add_action( 'after_setup_theme', 'twenty_twenty_one_setup' );
+
+/**
+ * Register widget area.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
+ *
+ * @return void
+ */
+function twenty_twenty_one_widgets_init() {
+
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Footer', 'twentytwentyone' ),
+			'id'            => 'sidebar-1',
+			'description'   => esc_html__( 'Add widgets here to appear in your footer.', 'twentytwentyone' ),
+			'before_widget' => '<section id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title">',
+			'after_title'   => '</h2>',
+		)
+	);
+}
+add_action( 'widgets_init', 'twenty_twenty_one_widgets_init' );
+
+/**
+ * Set the content width in pixels, based on the theme's design and stylesheet.
+ *
+ * Priority 0 to make it available to lower priority callbacks.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @global int $content_width Content width.
+ *
+ * @return void
+ */
+function twenty_twenty_one_content_width() {
+	// This variable is intended to be overruled from themes.
+	// Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+	$GLOBALS['content_width'] = apply_filters( 'twenty_twenty_one_content_width', 750 );
+}
+add_action( 'after_setup_theme', 'twenty_twenty_one_content_width', 0 );
+
+/**
+ * Enqueue scripts and styles.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twenty_twenty_one_scripts() {
+	// Note, the is_IE global variable is defined by WordPress and is used
+	// to detect if the current browser is internet explorer.
+	global $is_IE, $wp_scripts;
+	if ( $is_IE ) {
+		// If IE 11 or below, use a flattened stylesheet with static values replacing CSS Variables.
+		wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/assets/css/ie.css', array(), wp_get_theme()->get( 'Version' ) );
+	} else {
+		// If not IE, use the standard stylesheet.
+		wp_enqueue_style( 'twenty-twenty-one-style', get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
+	}
+
+	// RTL styles.
+	wp_style_add_data( 'twenty-twenty-one-style', 'rtl', 'replace' );
+
+	// Print styles.
+	wp_enqueue_style( 'twenty-twenty-one-print-style', get_template_directory_uri() . '/assets/css/print.css', array(), wp_get_theme()->get( 'Version' ), 'print' );
+
+	// Threaded comment reply styles.
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+
+	// Register the IE11 polyfill file.
+	wp_register_script(
+		'twenty-twenty-one-ie11-polyfills-asset',
+		get_template_directory_uri() . '/assets/js/polyfills.js',
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+
+	// Register the IE11 polyfill loader.
+	wp_register_script(
+		'twenty-twenty-one-ie11-polyfills',
+		null,
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+	wp_add_inline_script(
+		'twenty-twenty-one-ie11-polyfills',
+		wp_get_script_polyfill(
+			$wp_scripts,
+			array(
+				'Element.prototype.matches && Element.prototype.closest && window.NodeList && NodeList.prototype.forEach' => 'twenty-twenty-one-ie11-polyfills-asset',
+			)
+		)
+	);
+
+	// Main navigation scripts.
+	if ( has_nav_menu( 'primary' ) ) {
+		wp_enqueue_script(
+			'twenty-twenty-one-primary-navigation-script',
+			get_template_directory_uri() . '/assets/js/primary-navigation.js',
+			array( 'twenty-twenty-one-ie11-polyfills' ),
+			wp_get_theme()->get( 'Version' ),
+			true
+		);
+	}
+
+	// Responsive embeds script.
+	wp_enqueue_script(
+		'twenty-twenty-one-responsive-embeds-script',
+		get_template_directory_uri() . '/assets/js/responsive-embeds.js',
+		array( 'twenty-twenty-one-ie11-polyfills' ),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'twenty_twenty_one_scripts' );
+
+/**
+ * Enqueue block editor script.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_block_editor_script() {
+
+	wp_enqueue_script( 'twentytwentyone-editor', get_theme_file_uri( '/assets/js/editor.js' ), array( 'wp-blocks', 'wp-dom' ), wp_get_theme()->get( 'Version' ), true );
+}
+
+add_action( 'enqueue_block_editor_assets', 'twentytwentyone_block_editor_script' );
+
+/**
+ * Fix skip link focus in IE11.
+ *
+ * This does not enqueue the script because it is tiny and because it is only for IE11,
+ * thus it does not warrant having an entire dedicated blocking script being loaded.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @link https://git.io/vWdr2
+ */
+function twenty_twenty_one_skip_link_focus_fix() {
+
+	// If SCRIPT_DEBUG is defined and true, print the unminified file.
+	if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+		echo '<script>';
+		include get_template_directory() . '/assets/js/skip-link-focus-fix.js';
+		echo '</script>';
+	} else {
+		// The following is minified via `npx terser --compress --mangle -- assets/js/skip-link-focus-fix.js`.
+		?>
+		<script>
+		/(trident|msie)/i.test(navigator.userAgent)&&document.getElementById&&window.addEventListener&&window.addEventListener("hashchange",(function(){var t,e=location.hash.substring(1);/^[A-z0-9_-]+$/.test(e)&&(t=document.getElementById(e))&&(/^(?:a|select|input|button|textarea)$/i.test(t.tagName)||(t.tabIndex=-1),t.focus())}),!1);
+		</script>
+		<?php
+	}
+}
+add_action( 'wp_print_footer_scripts', 'twenty_twenty_one_skip_link_focus_fix' );
+
+/**
+ * Enqueue non-latin language styles.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twenty_twenty_one_non_latin_languages() {
+	$custom_css = twenty_twenty_one_get_non_latin_css( 'front-end' );
+
+	if ( $custom_css ) {
+		wp_add_inline_style( 'twenty-twenty-one-style', $custom_css );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'twenty_twenty_one_non_latin_languages' );
+
+// SVG Icons class.
+require get_template_directory() . '/classes/class-twenty-twenty-one-svg-icons.php';
+
+// Custom color classes.
+require get_template_directory() . '/classes/class-twenty-twenty-one-custom-colors.php';
+new Twenty_Twenty_One_Custom_Colors();
+
+// Enhance the theme by hooking into WordPress.
+require get_template_directory() . '/inc/template-functions.php';
+
+// Menu functions and filters.
+require get_template_directory() . '/inc/menu-functions.php';
+
+// Custom template tags for the theme.
+require get_template_directory() . '/inc/template-tags.php';
+
+// Customizer additions.
+require get_template_directory() . '/classes/class-twenty-twenty-one-customize.php';
+new Twenty_Twenty_One_Customize();
+
+// Block Patterns.
+require get_template_directory() . '/inc/block-patterns.php';
+
+// Block Styles.
+require get_template_directory() . '/inc/block-styles.php';
+
+// Dark Mode.
+require_once get_template_directory() . '/classes/class-twenty-twenty-one-dark-mode.php';
+new Twenty_Twenty_One_Dark_Mode();
+
+/**
+ * Enqueue scripts for the customizer preview.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_customize_preview_init() {
+	wp_enqueue_script(
+		'twentytwentyone-customize-helpers',
+		get_theme_file_uri( '/assets/js/customize-helpers.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+
+	wp_enqueue_script(
+		'twentytwentyone-customize-preview',
+		get_theme_file_uri( '/assets/js/customize-preview.js' ),
+		array( 'customize-preview', 'customize-selective-refresh', 'jquery', 'twentytwentyone-customize-helpers' ),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+}
+add_action( 'customize_preview_init', 'twentytwentyone_customize_preview_init' );
+
+/**
+ * Enqueue scripts for the customizer.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_customize_controls_enqueue_scripts() {
+
+	wp_enqueue_script(
+		'twentytwentyone-customize-helpers',
+		get_theme_file_uri( '/assets/js/customize-helpers.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+}
+add_action( 'customize_controls_enqueue_scripts', 'twentytwentyone_customize_controls_enqueue_scripts' );
+
+/**
+ * Calculate classes for the main <html> element.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_the_html_classes() {
+	/**
+	 * Filters the classes for the main <html> element.
+	 *
+	 * @since Twenty Twenty-One 1.0
+	 *
+	 * @param string The list of classes. Default empty string.
+	 */
+	$classes = apply_filters( 'twentytwentyone_html_classes', '' );
+	if ( ! $classes ) {
+		return;
+	}
+	echo 'class="' . esc_attr( $classes ) . '"';
+}
+
+/**
+ * Add "is-IE" class to body if the user is on Internet Explorer.
+ *
+ * @since Twenty Twenty-One 1.0
+ *
+ * @return void
+ */
+function twentytwentyone_add_ie_class() {
+	?>
+	<script>
+	if ( -1 !== navigator.userAgent.indexOf( 'MSIE' ) || -1 !== navigator.appVersion.indexOf( 'Trident/' ) ) {
+		document.body.classList.add( 'is-IE' );
+	}
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'twentytwentyone_add_ie_class' );
+
+if ( ! function_exists( 'wp_get_list_item_separator' ) ) :
+	/**
+	 * Retrieves the list item separator based on the locale.
+	 *
+	 * Added for backward compatibility to support pre-6.0.0 WordPress versions.
+	 *
+	 * @since 6.0.0
+	 */
+	function wp_get_list_item_separator() {
+		/* translators: Used between list items, there is a space after the comma. */
+		return __( ', ', 'twentytwentyone' );
+	}
+endif;
+
+add_filter ('add_to_cart_redirect', 'redirect_to_checkout');
+
+function redirect_to_checkout() {
+    global $woocommerce;
+    $checkout_url = $woocommerce->cart->get_checkout_url();
+    return $checkout_url;
+}	
+
+
+// Change add to cart text on single product page
+add_filter( 'woocommerce_product_single_add_to_cart_text', 'woocommerce_add_to_cart_button_text_single' ); 
+function woocommerce_add_to_cart_button_text_single() {
+    return __( 'Buy Now', 'woocommerce' ); 
+}
+
+// Change add to cart text on product archives page
+add_filter( 'woocommerce_product_add_to_cart_text', 'woocommerce_add_to_cart_button_text_archives' );  
+function woocommerce_add_to_cart_button_text_archives() {
+    return __( 'Buy Now', 'woocommerce' );
+}
+
+
+
+add_action( 'woocommerce_after_add_to_cart_button', 'add_content_after_addtocart_button_func' );
+
+function add_content_after_addtocart_button_func() {
+	global $product;
+	$title = get_field( 'custom_product_title', $product->get_id() );
+	$string = $title;
+preg_match('/[^ ]*$/', $string, $results);
+$last_word = $results[0]; 
+	?>
+		<div class="custom_msg">
+			<p>"We offer worldwide <span><?php echo $last_word;?></span>. If you need <span><?php echo $last_word;?></span> from specific demographics that align with your social media goals, please contact our chat support."</p>
+		</div>
+        <div class="second_content">
+			<img src="https://socialzinger.com/wp-content/uploads/2023/06/sz-social-proof-1024x119-1.png" alt="" >
+		</div>
+
+	<?php
+
+ 
+
+}
+
+// add_action( 'woocommerce_variation_options_pricing', 'bbloomer_add_custom_field_to_variations', 10, 3 );
+ 
+// function bbloomer_add_custom_field_to_variations( $loop, $variation_data, $variation ) {
+//    woocommerce_wp_text_input( array(
+// 'id' => 'custom_field[' . $loop . ']',
+// 'class' => 'short',
+// 'label' => __( 'Custom Field', 'woocommerce' ),
+// 'value' => get_post_meta( $variation->ID, 'custom_field', true )
+//    ) );
+// }
+ 
+// -----------------------------------------
+// 2. Save custom field on product variation save
+ 
+// add_action( 'woocommerce_save_product_variation', 'bbloomer_save_custom_field_variations', 10, 2 );
+ 
+// function bbloomer_save_custom_field_variations( $variation_id, $i ) {
+//    $custom_field = $_POST['custom_field'][$i];
+//    if ( isset( $custom_field ) ) update_post_meta( $variation_id, 'custom_field', esc_attr( $custom_field ) );
+// }
+ 
+// -----------------------------------------
+// 3. Store custom field value into variation data
+ 
+// add_filter( 'woocommerce_available_variation', 'bbloomer_add_custom_field_variation_data' );
+ 
+// function bbloomer_add_custom_field_variation_data( $variations ) {
+//    $variations['custom_field'] = '<div class="woocommerce_custom_field">Custom Field: <span>' . get_post_meta( $variations[ 'variation_id' ], 'custom_field', true ) . '</span></div>';
+//    return $variations;
+// }
+
+add_action( 'woocommerce_before_shop_loop_item_title', 'bbloomer_acf_loop' );
+ 
+function bbloomer_acf_loop() {
+   global $product;
+   $title = get_field( 'custom_product_title', $product->get_id() );
+   if ( ! $title ) return;
+   echo '<h2 class="' . esc_attr( apply_filters( 'woocommerce_product_loop_title_classes', 'woocommerce-loop-product__title' ) ) . '">' . $title . '</h2>';
+}
+
+// add_action( 'woocommerce_single_product_summary', 'singleProductName', 2);
+
+// function singleProductName() {
+// 	global $product;
+// 	$title = get_field( 'custom_product_title', $product->get_id() );
+// 	if ( ! $title ) return;
+// 	echo '<h1 class="product_title entry-title">' . $title . '</h1>';
+//  }
+
+ add_filter('woocommerce_cart_item_name', 'order_review_custom_field', 999, 3);
+
+ function order_review_custom_field($product_name, $cart_item, $cart_item_key)
+ {
+	 $customProName = get_field('custom_product_title', $cart_item['product_id']);
+ 
+	 return ($customProName) ?
+		 $product_name . '<div> ' . $customProName . '</div>'
+		 :
+		 $product_name . '';
+		 //<div> No Name found!</div>
+ 
+ }
+
+//  add_action('woocommerce_new_order_item', 'woocommerce_new_order_item_add_price', 10, 3);
+
+//  function woocommerce_new_order_item_add_price($item_id, $item, $order_id) {
+// 	 // global $product;
+	 
+ 
+// 	 $item_type = $item->get_type();
+ 
+// 	 // We only want product order type
+// 	 $pro_id = $item->get_product_id();
+   
+// 		 $product = wc_get_product($item->get_product_id());
+// 		 $title = get_field( 'custom_product_title', $pro_id );
+// 		 print_r($product);
+// 		 // die();
+// 		 $product_name = $product->get_name();
+// 		 $product_price = $product->get_price();
+// 		 $new_name = $title;
+// 		 $item->set_name($new_name);
+// 		 $item->save();  
+   
+//  }
+
+
+function change_product_name_on_invoice($product_name, $item) {
+
+
+	$pro_id = $item->get_product_id();
+
+	$title = get_field( 'custom_product_title', $pro_id );
+
+
+// Modify the product name as desired
+$new_product_name = $title;
+
+// Return the modified product name
+return $new_product_name;
+}
+add_filter('woocommerce_order_item_name', 'change_product_name_on_invoice', 10, 2);
+
+
+
+
+
+
+
+
+
+// Pass ACF custom field to order line item meta
+function custom_pass_acf_to_order_line_item_meta( $item, $cart_item_key, $values, $order ) {
+    // Get the product ID
+    $product_id = $item->get_product_id();
+    
+    // Get the custom field value using the ACF field key
+    $custom_field_value = get_field( 'services_id', $product_id );
+    
+    // Add the custom field value to the order line item meta
+    if ( $custom_field_value ) {
+        $item->add_meta_data( 'Services IDD', $custom_field_value );
+		//$order->get_id();
+    }
+	
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'custom_pass_acf_to_order_line_item_meta', 10, 4 );
+
+
+// Remove other items from cart when a new item is added
+// function restrict_to_single_product_in_cart($valid, $product_id, $quantity)
+// {
+//     if (WC()->cart->get_cart_contents_count() > 0) {
+//         // Remove all items except the latest added item
+//         WC()->cart->empty_cart();
+//         return true;
+//     }
+//     return $valid;
+// }
+// add_filter('woocommerce_add_to_cart_validation', 'restrict_to_single_product_in_cart', 10, 3);
+
+
+// Restrict checkout to only one product
+// function restrict_checkout_to_single_product($passed, $cart)
+// {
+//     if (is_cart() || is_checkout()) {
+//         if (WC()->cart->get_cart_contents_count() > 1) {
+//             wc_add_notice(__('Only one product is allowed in the cart.', 'woocommerce'), 'error');
+//             $passed = false;
+//         }
+//     }
+//     return $passed;
+// }
+// add_filter('woocommerce_add_to_cart_validation', 'restrict_checkout_to_single_product', 10, 2);
+
+
+
+
+
+add_action( 'woocommerce_before_order_itemmeta', 'customPro_name_before_order_itemmeta', 10, 3 );
+function customPro_name_before_order_itemmeta( $item_id, $item, $_product ){
+
+	$product_id = $item->get_product_id();
+	$custom_product_name = get_field('custom_product_title', $product_id);
+	?>
+	<div class="pro_custom">
+		<p><strong>Custom Title:</strong>    <?php echo " &nbsp;&nbsp;&nbsp;";?> <?= $custom_product_name;?></p>
+	</div>
+	<?php   
+}
+
+
+add_filter( 'manage_edit-product_columns', 'bbloomer_admin_products_visibility_column', 9999 );
+ 
+function bbloomer_admin_products_visibility_column( $columns ){
+   $columns['visibility'] = 'Custom Name';
+   return $columns;
+}
+ 
+add_action( 'manage_product_posts_custom_column', 'bbloomer_admin_products_visibility_column_content', 10, 2 );
+ 
+function bbloomer_admin_products_visibility_column_content( $column, $product_id ){
+    if ( $column == 'visibility' ) {
+        $product = wc_get_product( $product_id );
+		$custom_product_name = get_field('custom_product_title', $product_id);
+		
+      echo $custom_product_name;
+    }
+}
+
+
+
+
+
+function ns_woocommerce_checkout_remove_item( $product_name, $cart_item, $cart_item_key ) {
+	if ( is_checkout() ) {
+		$_product = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+		$product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+	
+		$remove_link = apply_filters( 'woocommerce_cart_item_remove_link', sprintf(
+			'<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s">×</a>',
+			esc_url( WC()->cart->get_remove_url( $cart_item_key ) ),
+			__( 'Remove this item', 'woocommerce' ),
+			esc_attr( $product_id ),
+			esc_attr( $_product->get_sku() )
+		), $cart_item_key );
+	
+		return '<span class="product-remove">' . $remove_link . '</span> <span>' . $product_name . '</span>';
+	}
+	
+	return $product_name;
+	}
+	add_filter( 'woocommerce_cart_item_name', 'ns_woocommerce_checkout_remove_item', 10, 3 );
+
+
+add_filter('wc_add_to_cart_message', 'socialzinger_handler_function_name', 10, 2);
+function socialzinger_handler_function_name($message, $product_id) {
+	$custom_product_name = get_field('custom_product_title', $product_id);
+    return $custom_product_name . " has been added to your cart";
+}
+
+
+
+function remove_checkout_product_message($message, $cart_item) {
+    // Set an empty string to remove the message
+	
+   
+	$custom_product_name = get_field('custom_product_title', $cart_item['product_id']);
+
+    return $custom_product_name;
+}
+add_filter('woocommerce_cart_item_removed_title', 'remove_checkout_product_message', 10, 2);
+
+
+
+add_action( 'woocommerce_before_add_to_cart_button', 'add_name_on_tshirt_field' );
+function add_name_on_tshirt_field() {
+	global $product;
+
+	if ( $product->get_id() == 1194 ) { 
+    echo '<div class="woocommerce-variation-add-to-cart variations_button woocommerce-variation-add-to-cart-disabled">
+			<div class="custom-url-field">
+			<label for="custom_url_field">dfsdfs</label>
+			<input type="url" name="custom_url_field" id="custom_url_field" required>
+		</div>
+    </br>';
+
+	}
+}
+
+// Save as custom cart item data
+add_filter( 'woocommerce_add_cart_item_data', 'add_cart_item_custom_data', 10, 2 );
+function add_cart_item_custom_data( $cart_item_data, $product_id ) {
+	if ( isset($_POST['custom_url_field']) && ! empty($_POST['custom_url_field']) ) {
+        $cart_item_data['custom_url_field'] = sanitize_text_field($_POST['custom_url_field']);
+    }
+    return $cart_item_data;
+}
+
+// Display in cart and checkout
+add_filter( 'woocommerce_get_item_data', 'display_on_cart_and_checkout', 10, 2 );
+function display_on_cart_and_checkout( $cart_data, $cart_item ) {
+	if ( isset($cart_item['custom_url_field']) ) {
+        $cart_data[] = array( "name" => __("Facebook Followers", "woocommerce"),  "value" => $cart_item['custom_url_field'] );
+    }
+    return $cart_data;
+}
+
+
+// Display on orders and email notifications (save as custom order item meta data)
+add_action( 'woocommerce_checkout_create_order_line_item', 'display_on_orders_and_emails', 10, 4 );
+function display_on_orders_and_emails( $item, $cart_item_key, $values, $order ) {
+    if ( isset($values['custom_url_field']) ) {
+        $item->add_meta_data( __("Facebook Followers", "woocommerce"), $values['custom_url_field'] );
+    }
+
+}
+
+
+// Disable cart and checkout for multiple products
+add_filter('woocommerce_add_cart_item_data', 'restrict_one_product_at_a_time', 10, 3 );
+function restrict_one_product_at_a_time( $cart_item_data, $product_id, $variation_id ) {
+    // Remove all other products from the cart
+    WC()->cart->empty_cart();
+
+    // Keep only the current product in the cart
+    return $cart_item_data;
+}
+
+
+add_shortcode( 'slider_customProduct', 'slider_customProduct' );
+function slider_customProduct(  ) {
+	global $product;
+
+// echo'';
+// print_r();
+// echo '';
+
+$product_id = $product->id;
+//get product url with its id
+$url = get_permalink( $product_id );
+	?>
+	<div class="custom_slide section">
+  <div class="row">
+    <div class="slider-pro">
+      <ul class="products cusm_proSlider">
+        <?php
+            $args = array( 
+              'post_type' => 'product',
+            'posts_per_page' => -1,
+            
+            );
+            $customProduct = get_posts($args);
+            foreach( $customProduct as $pro):
+                  $_product = wc_get_product( $pro->ID );
+                  $title = get_field( 'custom_product_title', $pro->ID );
+                  $product_cats = wp_get_post_terms( $pro->ID, 'product_cat' );
+                  $category_name = $product_cats[0]->name;
+                  $category_id = $product_cats[0]->term_id;
+                  $product_category = wp_get_post_terms($pro->ID, 'product_cat');
+                  $category_idd = $product_category[0]->term_id;
+                  $category_field_value = get_field('cat_icon', 'product_cat_' . $category_idd);
+                  $cat_ison = get_field('cat_icon', $category_id );
+            ?>
+                <li class="product">
+                  <a href="<?php echo get_the_permalink($pro->ID); ?>" title="<?=$title;?>">
+                        <img src="<?php echo $category_field_value['url'];?>" alt="">
+                            <h3 class="customPrTitle"><?=$title;?></h3>
+                            <?php echo '<span class="price">'. $_product->get_price_html() .'</span>'?>
+                  </a>
+                  <div class="cartbutton">
+                    <a href="<?php echo get_the_permalink($pro->ID); ?>">Buy Now</a>
+                  </div>
+              </li>
+          <?php endforeach;
+          wp_reset_query(); 
+        ?>
+      </ul>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery('.cusm_proSlider').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+		adaptiveHeight: true,
+        // autoplay: true,
+        // autoplaySpeed: 2000,
+        responsive: [
+                      {
+                        breakpoint: 1024,
+                        settings: {
+                          slidesToShow: 4,
+                          slidesToScroll: 1,
+                          infinite: true,
+                        }
+                      },
+                      {
+                        breakpoint: 600,
+                        settings: {
+                          slidesToShow: 2,
+                          slidesToScroll: 2
+                        }
+                      },
+                      {
+                        breakpoint: 480,
+                        settings: {
+                          slidesToShow: 1,
+                          slidesToScroll: 1
+                        }
+                      }
+                    ]
+      });
+    });
+</script>
+	<?php
+}
+
+
+function wpdocs_codex_bar_init() {
+	$labels = array(
+		'name'                  => _x( 'Bar', 'Post type general name', 'textdomain' ),
+		'singular_name'         => _x( 'Bar', 'Post type singular name', 'textdomain' ),
+		'menu_name'             => _x( 'Bar', 'Admin Menu text', 'textdomain' ),
+		'name_admin_bar'        => _x( 'Bar', 'Add New on Toolbar', 'textdomain' ),
+		'add_new'               => __( 'Add New', 'textdomain' ),
+		'add_new_item'          => __( 'Add New Bar', 'textdomain' ),
+		'new_item'              => __( 'New Bar', 'textdomain' ),
+		'edit_item'             => __( 'Edit Bar', 'textdomain' ),
+		'view_item'             => __( 'View Bar', 'textdomain' ),
+		'all_items'             => __( 'All Bar', 'textdomain' ),
+		'search_items'          => __( 'Search Bar', 'textdomain' ),
+		'parent_item_colon'     => __( 'Parent Bar:', 'textdomain' ),
+		'not_found'             => __( 'No Bar found.', 'textdomain' ),
+		'not_found_in_trash'    => __( 'No Bar found in Trash.', 'textdomain' ),
+		'featured_image'        => _x( 'Bar Cover Image', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'textdomain' ),
+		'set_featured_image'    => _x( 'Set cover image', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
+		'remove_featured_image' => _x( 'Remove cover image', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
+		'use_featured_image'    => _x( 'Use as cover image', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'textdomain' ),
+		'archives'              => _x( 'bar archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'textdomain' ),
+		'insert_into_item'      => _x( 'Insert into bar', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'textdomain' ),
+		'uploaded_to_this_item' => _x( 'Uploaded to this bar', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'textdomain' ),
+		'filter_items_list'     => _x( 'Filter Bar list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'textdomain' ),
+		'items_list_navigation' => _x( 'Bar list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'textdomain' ),
+		'items_list'            => _x( 'Bar list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'textdomain' ),
+	);
+
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'bar' ),
+		'capability_type'    => 'post',
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'menu_position'      => null,
+		'supports'           => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ),
+	);
+
+	register_post_type( 'bar', $args );
+}
+
+add_action( 'init', 'wpdocs_codex_bar_init' );
+
+
+
+//custom notification slider 
+
+add_shortcode( 'slider_customnotifcation', 'slider_customNotification' );
+function slider_customNotification(  ) {
+	?>
+	<div class="barcustom">
+  <div class="row">
+    <div class="slider-pro">
+      <ul class="products cusm_proBar">
+        <?php
+            $args = array( 
+              'post_type' => 'bar',
+              'posts_per_page' => -1,    
+            );
+            $customSlider = get_posts($args);
+
+            foreach( $customSlider as $bar):
+                  $getDeatls = get_field( 'add_scroll_bar', $bar->ID );
+
+            ?>
+                <li class="product">
+                  <a href="<?php echo $getDeatls['add_link'];?>" >
+                        <img src="<?php echo $getDeatls['image']['url'];?>" alt="">
+                            <h3 class="customPrTitle"><?php echo $getDeatls['title'];?></h3>
+                  </a>
+              </li>
+          <?php endforeach;
+          wp_reset_query(); 
+        ?>
+      </ul>
+    </div>
+  </div>
+</div>
+<style>
+.cusm_proBar {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery('.cusm_proBar').slick({
+        slidesToShow: 7,
+        slidesToScroll: 1,
+		adaptiveHeight: true,
+		arrows: false,
+		autoplay: true,
+		autoplaySpeed: 1000,
+        responsive: [
+                      {
+                        breakpoint: 1024,
+                        settings: {
+                          slidesToShow: 4,
+                          slidesToScroll: 1,
+                          infinite: true,
+						  autoplay: true,
+		                  autoplaySpeed: 1000,
+                        }
+                      },
+                      {
+                        breakpoint: 600,
+                        settings: {
+                          slidesToShow: 4,
+                          slidesToScroll: 2
+                        }
+                      },
+                      {
+                        breakpoint: 480,
+                        settings: {
+                          slidesToShow: 3,
+                          slidesToScroll: 1
+                        }
+                      }
+                    ]
+      });
+
+	  jQuery('.cusm_proBar').show();
+    });
+</script>
+	<?php
+}
+
+
+add_shortcode( 'popupCustom', 'contactforPopup' );
+function contactforPopup() { 
+?>
+
+
+<div class="wrapper">
+    <!-- <button class="modal-toggle">Show modal</button> -->
+	<div class="addPop modal-toggle">
+		<div class="popMail">
+			<div class="icon">
+				<img src="https://socialzinger.com/wp-content/uploads/2023/10/circle.png" alt="">
+			</div>
+			<div class="textcustom">
+				<span>Email Address</span>
+				<p class="belowtxt">info@socialzinger.com</p>
+			</div>
+		</div>
+
+	</div>
+  </div>
+  
+  <div class="modal">
+    <div class="modal-overlay modal-toggle"></div>
+    <div class="modal-wrapper modal-transition">
+      <div class="modal-header">
+        <!-- <button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button> -->
+		<div class=" modal-close modal-toggle close-btn">×</div>
+        <!-- <h2 class="modal-heading">This is a modal</h2> -->
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-content">
+		<?php echo do_shortcode( '[contact-form-7 id="97c69fa" title="Manual Growth Service Instagram"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+	// Quick & dirty toggle to demonstrate modal toggle behavior
+jQuery('.modal-toggle').on('click', function(e) {
+  e.preventDefault();
+  jQuery('.modal').toggleClass('is-visible');
+});
+
+</script>
+<?php
+}
+
+
+//new popuop
+add_shortcode( 'aftersale', 'contactforPopsecond' );
+function contactforPopsecond() { 
+?>
+
+
+<div class="wrapper secondbox">
+  <div class="modal aftersale">
+    <div class="modal-overlay modal-toggle"></div>
+    <div class="modal-wrapper modal-transition">
+      <div class="modal-header">
+        <!-- <button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button> -->
+		<div class=" modal-close modal-toggle close-btn">×</div>
+        <!-- <h2 class="modal-heading">This is a modal</h2> -->
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-content">
+		<?php echo do_shortcode( '[contact-form-7 id="f16b2e5" title="Pre sale form"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+	// Quick & dirty toggle to demonstrate modal toggle behavior
+jQuery('#buttonone').on('click', function(e) {
+  e.preventDefault();
+  jQuery('.modal.aftersale').toggleClass('is-visible');
+});
+
+</script>
+<?php
+}
+
+//new popuop
+add_shortcode( 'presale', 'contactforPopuppre' );
+function contactforPopuppre() { 
+?>
+
+  <div class="modall new-modall">
+    <div class="modall-overlay modall-toggle"></div>
+    <div class="modall-wrapper modall-transition">
+      <div class="modall-header">
+        <div class="modall-close modall-toggle close-btn">×</div>
+      </div>
+      <div class="modall-body">
+        <div class="modall-content">
+		<?php echo do_shortcode('[contact-form-7 id="cf38bee" title="Contact after sale"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+	.modall {
+    position: fixed;
+    z-index: 10000; /* 1 */
+    top:7%;
+    left: 0;
+    visibility: hidden;
+    width: 70%;
+	margin-left:15%;
+    height: 100%;
+}
+
+.modall.is-show {
+    visibility: visible;
+}
+
+.modall-overlay {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: hsla(0, 0%, 0%, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s;
+}
+
+.modall.is-show .modall-overlay {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.modall-wrapper {
+  position: absolute;
+  z-index: 9999;
+  /* top: 6em; */
+  /* left: 50%; */
+  width: 100%;
+  /* margin-left: -16em; */
+  background-color: #fff;
+  box-shadow: 0 0 1.5em hsla(0, 0%, 0%, 0.35);
+  -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	max-height: calc(100vh - 70px);
+	overflow-y: auto;
+}
+
+.modall-transition {
+  transition: all 0.3s 0.12s;
+  transform: translateY(-10%);
+  opacity: 0;
+}
+
+.modall.is-show .modall-transition {
+	transform: translate(0, 0);
+  opacity: 1;
+}
+
+
+.modall-content {
+  padding: 1em;
+}
+
+.modall-header {
+  position: relative;
+  background-color: #fff;
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.06);
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.modall-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  padding: 1em;
+  color: #000;
+  background: none;
+  border: 0;
+	font-size:40px;
+	font-weight:800;
+}
+
+.modall-close:hover {
+  color: #777;
+}
+.modall-close.modall-toggle.close-btn:hover {
+    cursor: pointer;
+}
+.modall-wrapper.modall-transition {
+    border-radius: 10px;
+}
+</style>
+<script>
+
+
+jQuery(document).ready(function ($) {
+    // Add similar jQuery code for the new modal
+    $('#buttonnew').on('click', function (e) {
+      e.preventDefault();
+      $('.modall.new-modall').toggleClass('is-show');
+    });
+
+    // Close the modal when the close button is clicked
+    $('.modall-close').on('click', function () {
+      $('.modall.new-modall').removeClass('is-show');
+    });
+  });
+</script>
+<?php
+}
+
+
+// Added New custom fields regrasding authorize bank 
+add_action('woocommerce_admin_order_data_after_billing_address', 'add_authorization_id_field');
+
+
+function add_authorization_id_field($order){
+
+
+	$payment_method = $order->get_payment_method();
+
+$_authnet_authorization_code = $order->get_meta('_authnet_authorization_code', true);
+if ($_authnet_authorization_code) {
+	echo '<b>Authorization ID: </b>' . $_authnet_authorization_code .'</br>';
+
+} else {
+    echo "Not Found Authorize Id.</br>";
+}
+
+$last_4_digits = $order->get_meta('_authnet_cc_last4', true);
+
+if ($last_4_digits) {
+    echo "<b>Last 4 digits of the card:</b> " . $last_4_digits;
+} else {
+    echo "Last 4 digits not found.";
+}
+
+}
+
+
+function remove_customer_name_from_order_list($columns) {
+    unset($columns['billing_name']); // Removes customer name
+    return $columns;
+}
+add_filter('manage_edit-shop_order_columns', 'remove_customer_name_from_order_list');
+
+
+function remove_customer_name_column($columns) {
+    unset($columns['billing_name']); // Removes customer name column
+    return $columns;
+}
+add_filter('manage_edit-shop_order_columns', 'remove_customer_name_column');
+//Change name of ythe order lists column 
+// add_filter('manage_edit-shop_order_columns', 'socialzinger_alter_order_columns');
+
+// function socialzinger_alter_order_columns($columns) {
+//     $new_columns = is_array($columns) ? $columns : array();
+
+//     unset($new_columns['order_number']);
+
+//     $res_array = array_slice($new_columns, 0, 1, true) + array("custom_order_number" => "Order") +  array_slice($new_columns, 1, count($new_columns)-1, true);
+
+//     return $res_array;
+// }
+
+// add_action('manage_shop_order_posts_custom_column', 'socialzinger_alter_order_number_columns', 10, 2);
+
+// function socialzinger_alter_order_number_columns($column) {
+//     global $post, $woocommerce, $the_order;
+
+//     if ($column === 'custom_order_number') {
+//         $order_id = $post->ID;
+//         $order_link = get_edit_post_link($order_id);
+//         echo '<a href="' . $order_link . '">#' . $order_id . '</a>';
+//     }
+// }
+
+
+// // Add filter to make the custom column sortable
+// add_filter('manage_edit-shop_order_sortable_columns', 'socialzinger_make_order_number_column_sortable');
+
+// function socialzinger_make_order_number_column_sortable($columns) {
+//     $columns['custom_order_number'] = 'custom_order_number';
+//     return $columns;
+// }
+
+// // Add action to handle the sorting logic
+// add_action('pre_get_posts', 'socialzinger_order_number_column_sorting');
+
+// function socialzinger_order_number_column_sorting($query) {
+//     if (!is_admin() || !$query->is_main_query()) {
+//         return;
+//     }
+
+//     if ($query->get('orderby') == 'custom_order_number') {
+//         $query->set('orderby', 'ID'); // Sort by ID (order number)
+//     }
+// }
+
+add_shortcode( 'social-breadcrumbs', 'socialzinger_sagar_breadcrumbs' );
+
+
+function socialzinger_sagar_breadcrumbs() {
+    $here_text        = __( 'You are currently here!' ); 
+    $home_link        = home_url();
+    $home_text        = __( 'Home' );
+    $link_before      = '<li>';
+    $link_after       = '</li>';
+    $link_attr        = '';
+    $link             = $link_before . '<a href="%1$s">%2$s</a>' . $link_after;
+    $delimiter        = ' » '; // Change this line to include the "»" sign
+    $before           = '<li>';
+    $after            = '</li>';
+    $page_addon       = '';  
+    $breadcrumb_trail = '';
+    $category_links   = '';
+    
+    $wp_the_query   = $GLOBALS['wp_the_query'];
+    $queried_object = $wp_the_query->get_queried_object();
+
+    if ( is_singular() ) {
+        $post_object = sanitize_post( $queried_object );
+        $title          = apply_filters( 'the_title', $post_object->post_title );
+        $parent         = $post_object->post_parent;
+        $post_type      = $post_object->post_type;
+        $post_id        = $post_object->ID;
+        $post_link      = $before . $title . $after;
+        $parent_string  = '';
+        $post_type_link = '';
+        
+        // Initialize the category links
+        $category_links = '';
+
+        if ( 'post' === $post_type ) {          
+            $categories = get_the_category( $post_id );
+
+            $category_links = $delimiter. "<li><a href='/blog'>Blog</a> </li>" . $category_links;
+        } elseif ( 'product' === $post_type ) {
+            $product_categories = get_the_terms($post_id, 'product_cat');
+
+            if ($product_categories && !is_wp_error($product_categories)) {
+                $product_category = array_shift($product_categories);
+                $acf_category_link = get_field('breadcrumb', 'product_cat_' . $product_category->term_id);
+
+				if ($acf_category_link) {
+					$category_links .= $delimiter;
+                    $category_links .= sprintf(
+                        $link,
+                        esc_url($acf_category_link),
+                         $product_category->name
+                    );
+                } else {
+                    $category_links .= sprintf(
+                        $link,
+                        esc_url(get_term_link($product_category)),
+                        $delimiter . $product_category->name
+                    );
+                }
+            
+            }
+
+            $acf_field_value = get_field('custom_product_title', $post_id);
+
+            $title = $acf_field_value ? $acf_field_value : $title;
+        }
+
+        $breadcrumb_trail =  $category_links . $delimiter . $before . $title . $after;
+    }   
+
+    $breadcrumb_output_link  = '';
+    $breadcrumb_output_link .= '<ol class="breadcrumb">';
+    if (    is_home()
+         || is_front_page()
+    ) {
+        // Do not show breadcrumbs on page one of home and frontpage
+        if ( is_paged() ) {
+            $breadcrumb_output_link .= '<li><a href="' . $home_link . '">' . $home_text . '</a></li>';
+            $breadcrumb_output_link .= $page_addon;
+        }
+    } else {
+        $breadcrumb_output_link .= '<li><a href="' . $home_link . '">' . $home_text . '</a></li>';
+        $breadcrumb_output_link .= $breadcrumb_trail;
+        $breadcrumb_output_link .= $page_addon;
+    }
+    $breadcrumb_output_link .= '</ol><!-- .breadcrumbs -->';
+
+    return $breadcrumb_output_link;
+}
+
+
+
+//Order Custom Template
+
+// Enqueue scripts and styles
+function enqueue_custom_scripts() {
+    $version = time(); // Use a timestamp as the version to ensure it changes on every update
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('custom-script', get_template_directory_uri() . '/assets/js/custom-script.js', array('jquery'), $version, true);
+
+    // Pass the ajaxurl parameter to script.js
+    wp_localize_script('custom-script', 'ajax_object', array('ajaxurl' => admin_url('admin-ajax.php')));
+}
+add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
+
+// AJAX handler
+function get_order_details() {
+    // Simulate fetching order details from WooCommerce based on Order ID and Email
+    // Replace this with your actual logic to fetch details from your WooCommerce setup.
+
+    if (isset($_POST['orderId']) && isset($_POST['email'])) {
+        $orderId = sanitize_text_field($_POST['orderId']);
+        $email = sanitize_text_field($_POST['email']);
+
+        // Fetch order details (replace this with your actual logic)
+        $orderDetails = getOrderDetails($orderId, $email);
+
+        if ($orderDetails) {
+            wp_send_json_success($orderDetails);
+        } else {
+            wp_send_json_error('Order not found');
+        }
+    } else {
+        wp_send_json_error('Invalid request');
+    }
+}
+add_action('wp_ajax_get_order_details', 'get_order_details');
+add_action('wp_ajax_nopriv_get_order_details', 'get_order_details'); // For non-logged-in users
+
+function getOrderDetails($orderId, $email) {
+    // Ensure that WooCommerce is active
+    if (class_exists('WooCommerce')) {
+        // Get the order based on Order ID and Email
+        $order = wc_get_order($orderId);
+
+        if ($order) {
+            // Check if the provided email matches the order email
+            $order_email = $order->get_billing_email();
+            $billing_first_name = $order->get_billing_first_name();
+            $billing_last_name  = $order->get_billing_last_name();
+            $customer_full_name =  $billing_first_name .' ' .$billing_last_name;
+            if (strcasecmp($email, $order_email) === 0) {
+                // Get order details
+                $orderDetails = array(
+                    'customerfn'=>  $customer_full_name,
+                    'orderId' => $order->get_id(),
+                    'products' => array(),
+                    'status' => wc_get_order_status_name($order->get_status())
+                    
+                );
+
+              // Loop through order items to get product details
+				foreach ($order->get_items() as $item_id => $item) {
+					global $product;
+					$product = $item->get_product();
+					$product_name = $product->get_name();
+					$product_price = wc_price($product->get_price());
+					$quantity = filter_var($product_name, FILTER_SANITIZE_NUMBER_INT);
+
+					// Get the product ID
+					$product_id = $item->get_product_id();
+
+					// Get the custom product title
+					$custom_product_name = get_field('custom_product_title', $product_id);
+
+					// Get the product category
+					$product_category = wp_get_post_terms($product_id, 'product_cat');
+					$category_id = !empty($product_category) ? $product_category[0]->term_id : '';
+
+					// Get the category icon using ACF
+					$cat_icon = $category_id ? get_field('cat_icon', 'product_cat_' . $category_id) : '';
+					$cat_icon_url = $cat_icon ? $cat_icon['url'] : '';
+
+					// Initialize an array to store dynamic meta values for the current product
+
+				
+
+					// Add product details to the order including dynamic meta values
+					$orderDetails['products'][] = array(
+						'name' => $custom_product_name,
+						'price' => $product_price,
+						'quantity' => $quantity,
+						'custom_field' => $product_name,
+						'category_icon' => $cat_icon_url,
+					);
+				}
+
+				wp_send_json_success($orderDetails); // Send the order details as a JSON success response
+            }
+        }
+    }
+
+    wp_send_json_error('Order not found'); // Send a JSON error response if the order is not found
+}
+
+
+add_action( 'woocommerce_thankyou', 'my_custom_tracking' );
+
+if ( ! function_exists('custom_meta_to_order') ) {
+    add_action( 'woocommerce_checkout_create_order', 'custom_meta_to_order', 20, 1 );
+    function custom_meta_to_order( $order ) {
+		$eftid = isset( $_COOKIE['ef_tid_c_a_2'] ) ? $_COOKIE['ef_tid_c_a_2'] : '';
+        $order->update_meta_data( "eftid", "$eftid" );
+    }
+}
+
+function my_custom_tracking( $order_id ) {
+    // Lets grab the order
+    $order = wc_get_order( $order_id );
+
+    //Everflow order objects
+    $efOrder = array();
+    $efOrder['items'] = array();
+    $efOrder['oid'] = $order_id;
+    $efOrder['amt'] = $order->get_total();
+    $efOrder['bs'] = $order->get_billing_state();
+    $efOrder['bc'] = $order->get_billing_country();
+
+    // Determine if any coupons were used for this transaction
+    $coupons = "";
+    $couponCount = 0;
+    foreach ($order->get_used_coupons() as $coupon) {
+        $couponCount++;
+        if($couponCount > 1) { // do not add comma unless more than one coupon
+            $coupons .= ',';
+        }
+        $coupons .= $coupon;
+    }
+    $efOrder['cc'] = $coupons;
+
+    // This is how to grab line items from the order
+    $line_items = $order->get_items();
+
+    // This loops over line items
+    $efItems = array();
+    foreach ( $line_items as $item ) {
+        $efItem = array();
+        $product = $order->get_product_from_item( $item );
+        $efItem['ps'] = $product->get_sku();
+        $efItem['qty'] = $item['qty'];
+        $efItem['p'] = $order->get_line_total( $item, true, true );
+        $efItems[] = $efItem;
+    }
+    $efOrder['items'] = $efItems;
+
+    $javascriptCode = '<script type="text/javascript" src="https://www.bcms4trk.com/scripts/sdk/everflow.js"></script>
+        <script type="text/javascript">
+            EF.conversion({
+                aid: 2,
+                amount: '.($order->get_total() - $order->get_shipping_total()).',
+                order_id: "'.$order_id.'",
+                order: '.json_encode($efOrder).',
+                coupon_code: "'.$coupons.'",
+                adv1: "", //Optional
+                adv2: "", //Optional
+                adv3: "", //Optional
+                adv4: "", //Optional
+                adv5: "", //Optional
+                email: "'.$order->billing_email.'",
+            });
+        </script>';
+
+    echo $javascriptCode;
+}
