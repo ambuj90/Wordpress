@@ -1,0 +1,89 @@
+add_shortcode( 'social-breadcrumbs', 'ambuj_breadcrumbs' );
+
+
+function ambuj_breadcrumbs() {
+    $here_text        = __( 'You are currently here!' ); 
+    $home_link        = home_url();
+    $home_text        = __( 'Home' );
+    $link_before      = '<li>';
+    $link_after       = '</li>';
+    $link_attr        = '';
+    $link             = $link_before . '<a href="%1$s">%2$s</a>' . $link_after;
+    $delimiter        = ' » '; // Change this line to include the "»" sign
+    $before           = '<li>';
+    $after            = '</li>';
+    $page_addon       = '';  
+    $breadcrumb_trail = '';
+    $category_links   = '';
+    
+    $wp_the_query   = $GLOBALS['wp_the_query'];
+    $queried_object = $wp_the_query->get_queried_object();
+
+    if ( is_singular() ) {
+        $post_object = sanitize_post( $queried_object );
+        $title          = apply_filters( 'the_title', $post_object->post_title );
+        $parent         = $post_object->post_parent;
+        $post_type      = $post_object->post_type;
+        $post_id        = $post_object->ID;
+        $post_link      = $before . $title . $after;
+        $parent_string  = '';
+        $post_type_link = '';
+        
+        // Initialize the category links
+        $category_links = '';
+
+        if ( 'post' === $post_type ) {          
+            $categories = get_the_category( $post_id );
+
+            $category_links = $delimiter. "<li><a href='/blog'>Blog</a> </li>" . $category_links;
+        } elseif ( 'product' === $post_type ) {
+            $product_categories = get_the_terms($post_id, 'product_cat');
+
+            if ($product_categories && !is_wp_error($product_categories)) {
+                $product_category = array_shift($product_categories);
+                $acf_category_link = get_field('breadcrumb', 'product_cat_' . $product_category->term_id);
+
+				if ($acf_category_link) {
+					$category_links .= $delimiter;
+                    $category_links .= sprintf(
+                        $link,
+                        esc_url($acf_category_link),
+                         $product_category->name
+                    );
+                } else {
+                    $category_links .= sprintf(
+                        $link,
+                        esc_url(get_term_link($product_category)),
+                        $delimiter . $product_category->name
+                    );
+                }
+            
+            }
+
+            $acf_field_value = get_field('custom_product_title', $post_id);
+
+            $title = $acf_field_value ? $acf_field_value : $title;
+        }
+
+        $breadcrumb_trail =  $category_links . $delimiter . $before . $title . $after;
+    }   
+
+    $breadcrumb_output_link  = '';
+    $breadcrumb_output_link .= '<ol class="breadcrumb">';
+    if (    is_home()
+         || is_front_page()
+    ) {
+        // Do not show breadcrumbs on page one of home and frontpage
+        if ( is_paged() ) {
+            $breadcrumb_output_link .= '<li><a href="' . $home_link . '">' . $home_text . '</a></li>';
+            $breadcrumb_output_link .= $page_addon;
+        }
+    } else {
+        $breadcrumb_output_link .= '<li><a href="' . $home_link . '">' . $home_text . '</a></li>';
+        $breadcrumb_output_link .= $breadcrumb_trail;
+        $breadcrumb_output_link .= $page_addon;
+    }
+    $breadcrumb_output_link .= '</ol><!-- .breadcrumbs -->';
+
+    return $breadcrumb_output_link;
+}
