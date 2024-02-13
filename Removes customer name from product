@@ -1,0 +1,11 @@
+function remove_customer_name_from_order_list($columns) {
+    unset($columns['billing_name']); // Removes customer name
+    return $columns;
+}
+add_filter('manage_edit-shop_order_columns', 'remove_customer_name_from_order_list');
+
+function remove_customer_name_column($columns) {
+    unset($columns['billing_name']); // Removes customer name column
+    return $columns;
+}
+add_filter('manage_edit-shop_order_columns', 'remove_customer_name_column');
