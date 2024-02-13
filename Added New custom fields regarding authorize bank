@@ -1,0 +1,26 @@
+// Added New custom fields regrasding authorize bank 
+add_action('woocommerce_admin_order_data_after_billing_address', 'add_authorization_id_field');
+
+
+function add_authorization_id_field($order){
+
+
+	$payment_method = $order->get_payment_method();
+
+$_authnet_authorization_code = $order->get_meta('_authnet_authorization_code', true);
+if ($_authnet_authorization_code) {
+	echo '<b>Authorization ID: </b>' . $_authnet_authorization_code .'</br>';
+
+} else {
+    echo "Not Found Authorize Id.</br>";
+}
+
+$last_4_digits = $order->get_meta('_authnet_cc_last4', true);
+
+if ($last_4_digits) {
+    echo "<b>Last 4 digits of the card:</b> " . $last_4_digits;
+} else {
+    echo "Last 4 digits not found.";
+}
+
+}
