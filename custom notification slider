@@ -1,0 +1,303 @@
+//custom notification slider 
+
+add_shortcode( 'slider_customnotifcation', 'slider_customNotification' );
+function slider_customNotification(  ) {
+	?>
+	<div class="barcustom">
+  <div class="row">
+    <div class="slider-pro">
+      <ul class="products cusm_proBar">
+        <?php
+            $args = array( 
+              'post_type' => 'bar',
+              'posts_per_page' => -1,    
+            );
+            $customSlider = get_posts($args);
+
+            foreach( $customSlider as $bar):
+                  $getDeatls = get_field( 'add_scroll_bar', $bar->ID );
+
+            ?>
+                <li class="product">
+                  <a href="<?php echo $getDeatls['add_link'];?>" >
+                        <img src="<?php echo $getDeatls['image']['url'];?>" alt="">
+                            <h3 class="customPrTitle"><?php echo $getDeatls['title'];?></h3>
+                  </a>
+              </li>
+          <?php endforeach;
+          wp_reset_query(); 
+        ?>
+      </ul>
+    </div>
+  </div>
+</div>
+<style>
+.cusm_proBar {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery('.cusm_proBar').slick({
+        slidesToShow: 7,
+        slidesToScroll: 1,
+		adaptiveHeight: true,
+		arrows: false,
+		autoplay: true,
+		autoplaySpeed: 1000,
+        responsive: [
+                      {
+                        breakpoint: 1024,
+                        settings: {
+                          slidesToShow: 4,
+                          slidesToScroll: 1,
+                          infinite: true,
+						  autoplay: true,
+		                  autoplaySpeed: 1000,
+                        }
+                      },
+                      {
+                        breakpoint: 600,
+                        settings: {
+                          slidesToShow: 4,
+                          slidesToScroll: 2
+                        }
+                      },
+                      {
+                        breakpoint: 480,
+                        settings: {
+                          slidesToShow: 3,
+                          slidesToScroll: 1
+                        }
+                      }
+                    ]
+      });
+
+	  jQuery('.cusm_proBar').show();
+    });
+</script>
+	<?php
+}
+
+
+add_shortcode( 'popupCustom', 'contactforPopup' );
+function contactforPopup() { 
+?>
+
+
+<div class="wrapper">
+    <!-- <button class="modal-toggle">Show modal</button> -->
+	<div class="addPop modal-toggle">
+		<div class="popMail">
+			<div class="icon">
+				<img src="https://socialzinger.com/wp-content/uploads/2023/10/circle.png" alt="">
+			</div>
+			<div class="textcustom">
+				<span>Email Address</span>
+				<p class="belowtxt">info@socialzinger.com</p>
+			</div>
+		</div>
+
+	</div>
+  </div>
+  
+  <div class="modal">
+    <div class="modal-overlay modal-toggle"></div>
+    <div class="modal-wrapper modal-transition">
+      <div class="modal-header">
+        <!-- <button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button> -->
+		<div class=" modal-close modal-toggle close-btn">×</div>
+        <!-- <h2 class="modal-heading">This is a modal</h2> -->
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-content">
+		<?php echo do_shortcode( '[contact-form-7 id="97c69fa" title="Manual Growth Service Instagram"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+	// Quick & dirty toggle to demonstrate modal toggle behavior
+jQuery('.modal-toggle').on('click', function(e) {
+  e.preventDefault();
+  jQuery('.modal').toggleClass('is-visible');
+});
+
+</script>
+<?php
+}
+
+
+//new popuop
+add_shortcode( 'aftersale', 'contactforPopsecond' );
+function contactforPopsecond() { 
+?>
+
+
+<div class="wrapper secondbox">
+  <div class="modal aftersale">
+    <div class="modal-overlay modal-toggle"></div>
+    <div class="modal-wrapper modal-transition">
+      <div class="modal-header">
+        <!-- <button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button> -->
+		<div class=" modal-close modal-toggle close-btn">×</div>
+        <!-- <h2 class="modal-heading">This is a modal</h2> -->
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-content">
+		<?php echo do_shortcode( '[contact-form-7 id="f16b2e5" title="Pre sale form"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+	// Quick & dirty toggle to demonstrate modal toggle behavior
+jQuery('#buttonone').on('click', function(e) {
+  e.preventDefault();
+  jQuery('.modal.aftersale').toggleClass('is-visible');
+});
+
+</script>
+<?php
+}
+
+//new popuop
+add_shortcode( 'presale', 'contactforPopuppre' );
+function contactforPopuppre() { 
+?>
+
+  <div class="modall new-modall">
+    <div class="modall-overlay modall-toggle"></div>
+    <div class="modall-wrapper modall-transition">
+      <div class="modall-header">
+        <div class="modall-close modall-toggle close-btn">×</div>
+      </div>
+      <div class="modall-body">
+        <div class="modall-content">
+		<?php echo do_shortcode('[contact-form-7 id="cf38bee" title="Contact after sale"]'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+	.modall {
+    position: fixed;
+    z-index: 10000; /* 1 */
+    top:7%;
+    left: 0;
+    visibility: hidden;
+    width: 70%;
+	margin-left:15%;
+    height: 100%;
+}
+
+.modall.is-show {
+    visibility: visible;
+}
+
+.modall-overlay {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: hsla(0, 0%, 0%, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.3s, opacity 0.3s;
+}
+
+.modall.is-show .modall-overlay {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.modall-wrapper {
+  position: absolute;
+  z-index: 9999;
+  /* top: 6em; */
+  /* left: 50%; */
+  width: 100%;
+  /* margin-left: -16em; */
+  background-color: #fff;
+  box-shadow: 0 0 1.5em hsla(0, 0%, 0%, 0.35);
+  -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	max-height: calc(100vh - 70px);
+	overflow-y: auto;
+}
+
+.modall-transition {
+  transition: all 0.3s 0.12s;
+  transform: translateY(-10%);
+  opacity: 0;
+}
+
+.modall.is-show .modall-transition {
+	transform: translate(0, 0);
+  opacity: 1;
+}
+
+
+.modall-content {
+  padding: 1em;
+}
+
+.modall-header {
+  position: relative;
+  background-color: #fff;
+  box-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.06);
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.modall-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  padding: 1em;
+  color: #000;
+  background: none;
+  border: 0;
+	font-size:40px;
+	font-weight:800;
+}
+
+.modall-close:hover {
+  color: #777;
+}
+.modall-close.modall-toggle.close-btn:hover {
+    cursor: pointer;
+}
+.modall-wrapper.modall-transition {
+    border-radius: 10px;
+}
+</style>
+<script>
+
+
+jQuery(document).ready(function ($) {
+    // Add similar jQuery code for the new modal
+    $('#buttonnew').on('click', function (e) {
+      e.preventDefault();
+      $('.modall.new-modall').toggleClass('is-show');
+    });
+
+    // Close the modal when the close button is clicked
+    $('.modall-close').on('click', function () {
+      $('.modall.new-modall').removeClass('is-show');
+    });
+  });
+</script>
+<?php
+}
