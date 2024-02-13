@@ -1,0 +1,114 @@
+function enqueue_custom_scripts() {
+    $version = time(); // Use a timestamp as the version to ensure it changes on every update
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('custom-script', get_template_directory_uri() . '/assets/js/custom-script.js', array('jquery'), $version, true);
+
+    // Pass the ajaxurl parameter to script.js
+    wp_localize_script('custom-script', 'ajax_object', array('ajaxurl' => admin_url('admin-ajax.php')));
+}
+add_action('wp_enqueue_scripts', 'enqueue_custom_scripts');
+
+// AJAX handler
+function get_order_details() {
+    // Simulate fetching order details from WooCommerce based on Order ID and Email
+    // Replace this with your actual logic to fetch details from your WooCommerce setup.
+
+    if (isset($_POST['orderId']) && isset($_POST['email'])) {
+        $orderId = sanitize_text_field($_POST['orderId']);
+        $email = sanitize_text_field($_POST['email']);
+
+        // Fetch order details (replace this with your actual logic)
+        $orderDetails = getOrderDetails($orderId, $email);
+
+        if ($orderDetails) {
+            wp_send_json_success($orderDetails);
+        } else {
+            wp_send_json_error('Order not found');
+        }
+    } else {
+        wp_send_json_error('Invalid request');
+    }
+}
+add_action('wp_ajax_get_order_details', 'get_order_details');
+add_action('wp_ajax_nopriv_get_order_details', 'get_order_details'); // For non-logged-in users
+
+function getOrderDetails($orderId, $email) {
+    // Ensure that WooCommerce is active
+    if (class_exists('WooCommerce')) {
+        // Get the order based on Order ID and Email
+        $order = wc_get_order($orderId);
+
+        if ($order) {
+            // Check if the provided email matches the order email
+            $order_email = $order->get_billing_email();
+            $billing_first_name = $order->get_billing_first_name();
+            $billing_last_name  = $order->get_billing_last_name();
+            $customer_full_name =  $billing_first_name .' ' .$billing_last_name;
+            if (strcasecmp($email, $order_email) === 0) {
+                // Get order details
+                $orderDetails = array(
+                    'customerfn'=>  $customer_full_name,
+                    'orderId' => $order->get_id(),
+                    'products' => array(),
+                    'status' => wc_get_order_status_name($order->get_status())
+                    
+                );
+
+              // Loop through order items to get product details
+				foreach ($order->get_items() as $item_id => $item) {
+					global $product;
+					$product = $item->get_product();
+					$product_name = $product->get_name();
+					$product_price = wc_price($product->get_price());
+					$quantity = filter_var($product_name, FILTER_SANITIZE_NUMBER_INT);
+
+					// Get the product ID
+					$product_id = $item->get_product_id();
+
+					// Get the custom product title
+					$custom_product_name = get_field('custom_product_title', $product_id);
+
+					// Get the product category
+					$product_category = wp_get_post_terms($product_id, 'product_cat');
+					$category_id = !empty($product_category) ? $product_category[0]->term_id : '';
+
+					// Get the category icon using ACF
+					$cat_icon = $category_id ? get_field('cat_icon', 'product_cat_' . $category_id) : '';
+					$cat_icon_url = $cat_icon ? $cat_icon['url'] : '';
+
+					// Initialize an array to store dynamic meta values for the current product
+
+				
+
+					// Add product details to the order including dynamic meta values
+					$orderDetails['products'][] = array(
+						'name' => $custom_product_name,
+						'price' => $product_price,
+						'quantity' => $quantity,
+						'custom_field' => $product_name,
+						'category_icon' => $cat_icon_url,
+					);
+				}
+
+				wp_send_json_success($orderDetails); // Send the order details as a JSON success response
+            }
+        }
+    }
+
+    wp_send_json_error('Order not found'); // Send a JSON error response if the order is not found
+}
+
+
+add_action( 'woocommerce_thankyou', 'my_custom_tracking' );
+
+if ( ! function_exists('custom_meta_to_order') ) {
+    add_action( 'woocommerce_checkout_create_order', 'custom_meta_to_order', 20, 1 );
+    function custom_meta_to_order( $order ) {
+		$eftid = isset( $_COOKIE['ef_tid_c_a_2'] ) ? $_COOKIE['ef_tid_c_a_2'] : '';
+        $order->update_meta_data( "eftid", "$eftid" );
+    }
+}
+
+function my_custom_tracking( $order_id ) {
+    // Lets grab the order
+    $order = wc_get_order( $order_id );
