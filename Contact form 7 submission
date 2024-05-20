@@ -1,0 +1,16 @@
+<script>
+jQuery(document).ready(function($){
+
+  $(".cnt_pg_frm input[type=email], .cnt_pg_frm input[type=number], .cnt_pg_frm input[type=tel], .cnt_pg_frm input[type=text], .cnt_pg_frm textarea")
+    .on("input", function() {
+      var $label = $(this).closest("label"); // Find the closest label ancestor
+      if ($(this).val().length > 0) {
+        $(this).addClass("cnt-keypre");
+        $label.addClass("cnt-label");
+      } else {
+        $(this).removeClass("cnt-keypre");
+        $label.removeClass("cnt-label");
+      }
+    });
+});
+</script>
